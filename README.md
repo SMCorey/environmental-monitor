@@ -1,6 +1,6 @@
 # Presence Detection System
 
-A complete IoT solution for accurate presence detection using mmWave radar technology, with Wi-Fi 6, Bluetooth 5.0 LE, Zigbee, and Thread connectivity, plus a cross-platform desktop application.
+A complete IoT solution for accurate presence detection using mmWave radar technology, Bluetooth 5.0 LE, plus a cross-platform desktop application.
 
 ## Overview
 
@@ -20,7 +20,7 @@ This project consists of two main components:
 
 ### Features
 
-- Non-intrusive presence detection using mmWave radar technology (detects both stationary and moving humans)
+- Presence detection using mmWave radar technology (detects both stationary and moving humans)
 - Multi-target tracking with precise distance, angle, and movement information
 - Accurate detection even for sleeping persons or minimal movement
 - Up to 9m detection range with 100°×40° beam angle
@@ -161,12 +161,12 @@ Download the latest release for your platform from the [Releases](https://github
 ### System Requirements
 
 - **Windows**: Windows 10 or later
-- **macOS**: macOS 10.15 (Catalina) or later
-- **Linux**: Ubuntu 20.04 or equivalent
+- ~~ **macOS**: macOS 10.15 (Catalina) or later ~~ (macOS support at a later release)
+- ~~ **Linux**: Ubuntu 20.04 or equivalent ~~ (Linux support at a later release)
 - **Connectivity**: One of the following:
-  - Wi-Fi (2.4 GHz)
+  - ~~Wi-Fi (2.4 GHz)~~ (Future release)
   - Bluetooth 5.0 compatible
-  - Thread or Zigbee network (if using those protocols)
+  - ~~Thread or Zigbee network (if using those protocols)~~ (Future release)
 
 ## Development
 
@@ -203,15 +203,13 @@ presence-detection/
 - Required libraries:
   - Arduino library for mmWave Radar SEN0395
   - ArduinoBLE (for BLE functionality)
-  - Arduino WiFi libraries (for WiFi connectivity)
-  - Additional libraries for Zigbee/Thread if implementing those protocols
 
 #### Desktop Application
 - Rust 1.65 or later
 - Platform-specific build dependencies for Tauri:
   - **Windows**: Microsoft Visual Studio C++ Build Tools
   - **macOS**: Xcode Command Line Tools
-  - **Linux**: `build-essential`, `libwebkit2gtk-4.0-dev`, `libssl-dev`, and other Tauri dependencies
+  - **Linux**: `build-essential`, `libwebkit2gtk-4.0-dev`, `libssl-dev`, and other Tauri dependencies 
 
 ### Communication Protocols
 
@@ -224,8 +222,7 @@ The system supports multiple communication methods:
    - Extended protocol for detailed target information (distance, angle, confidence, movement)
    - Details in the [mmWave sensor protocol documentation](./docs/protocol/mmwave_protocol.md)
 
-2. **ESP32-C6 to Desktop Communication**
-   - **Wi-Fi**: Standard HTTP/WebSocket API for configuration and data streaming
+2. **ESP32-C6 to Application Communication**
    - **Bluetooth LE**: Custom GATT service for presence data and configuration
    - **USB**: Serial communication for debugging and direct control
    - Real-time data streaming protocol for multi-target information
@@ -249,42 +246,10 @@ The system supports multiple communication methods:
        ]
      }
      ```
-   - Optimized binary protocol available for resource-constrained environments
 
 ## Troubleshooting
 
-### Device Not Connecting
-- Ensure wireless connectivity (Wi-Fi/Bluetooth) is enabled on your computer
-- Check that the device is powered on (solid 3.3V power LED indicator)
-- Verify that you're within range (10 meters maximum for Bluetooth, appropriate range for Wi-Fi)
-- Check USB connection if using direct connection mode
-- Restart the device by pressing the reset button or reconnecting power
-
-### Sensor Not Detecting
-- Ensure the mmWave sensor has clear line of sight to the detection area
-- Verify correct mounting position (refer to installation instructions)
-- Adjust detection range and sensitivity using configuration commands:
-  ```
-  detRangeCfg -1 0 60  # Sets range from 0 to 9m (60*0.15m)
-  ```
-- Check sensor connections (TX/RX/GND/VCC) to the ESP32-C6
-- Verify the J5 jumper is connected if using the onboard power supply
-
-### False Detections
-- Adjust the output latency parameters to filter momentary detections
-  ```
-  outputLatency -1 100 400  # 2.5s delay when detected, 10s delay after disappearance
-  ```
-- Reposition the sensor away from moving objects like fans or curtains
-- Try configuring a more limited detection range to reduce false positives
-
-### Application Issues
-- Check the logs at:
-  - Windows: `%APPDATA%\presence-detection\logs`
-  - macOS: `~/Library/Logs/presence-detection`
-  - Linux: `~/.config/presence-detection/logs`
-- Update to the latest version of the application
-- Reinstall the application if problems persist
+- WiP
 
 ## Use Cases
 
@@ -323,7 +288,8 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## Acknowledgments
 
 - [DFRobot](https://www.dfrobot.com/) for the SEN0395 mmWave radar sensor
-- [Espressif](https://www.espressif.com/) for the ESP32-C6 microcontroller and ESP-IDF framework
+- [Espressif](https://www.espressif.com/) for the ESP32-C6 microcontroller
+- [ArduinoIDE](https://docs.espressif.com/projects/arduino-esp32/en/latest/getting_started.html#about-arduino-esp32) for Arduino IDE and ESP32 Support
 - [Tauri](https://tauri.app/) for the desktop application framework
 - [Svelte](https://svelte.dev/) for the frontend framework
 - [Tailwind CSS](https://tailwindcss.com/) for UI styling
