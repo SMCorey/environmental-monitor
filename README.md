@@ -161,8 +161,8 @@ Download the latest release for your platform from the [Releases](https://github
 ### System Requirements
 
 - **Windows**: Windows 10 or later
-- ~~ **macOS**: macOS 10.15 (Catalina) or later ~~ (macOS support at a later release)
-- ~~ **Linux**: Ubuntu 20.04 or equivalent ~~ (Linux support at a later release)
+- ~~**macOS**: macOS 10.15 (Catalina) or later~~ (macOS support at a later release)
+- ~~**Linux**: Ubuntu 20.04 or equivalent~~ (Linux support at a later release)
 - **Connectivity**: One of the following:
   - ~~Wi-Fi (2.4 GHz)~~ (Future release)
   - Bluetooth 5.0 compatible
