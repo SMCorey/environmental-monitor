@@ -1,6 +1,8 @@
 # Presence Detection System
 
+
 A Simple IoT Project for presence detection using mmWave radar technology, using MQTT, plus a cross-platform desktop application.
+
 
 ## Overview
 
@@ -60,7 +62,7 @@ Together, this technology stack delivers a responsive, efficient, and secure app
 
 ### Features
 
-- Non-intrusive presence detection using mmWave radar technology (detects both stationary and moving humans)
+- Presence detection using mmWave radar technology (detects both stationary and moving humans)
 - Multi-target tracking with precise distance, angle, and movement information
 - Accurate detection even for sleeping persons or minimal movement
 - Up to 9m detection range with 100°×40° beam angle
@@ -179,12 +181,12 @@ The application features an advanced radar-style visualization that displays:
 ### System Requirements
 
 - **Windows**: Windows 10 or later
-- **macOS**: macOS 10.15 (Catalina) or later
-- **Linux**: Ubuntu 20.04 or equivalent
+- ~~**macOS**: macOS 10.15 (Catalina) or later~~ (macOS support at a later release)
+- ~~**Linux**: Ubuntu 20.04 or equivalent~~ (Linux support at a later release)
 - **Connectivity**: One of the following:
   - Wi-Fi (2.4 GHz)
-  - Bluetooth 5.0 compatible
-  - Thread or Zigbee network (if using those protocols)
+  - ~~Bluetooth 5.0 compatible~~ (Future release)
+  - ~~Thread or Zigbee network (if using those protocols)~~ (Future release)
 
 ## Development
 
@@ -239,8 +241,7 @@ The system supports multiple communication methods:
    - Extended protocol for detailed target information (distance, angle, confidence, movement)
    - Details in the [mmWave sensor protocol documentation](./docs/protocol/mmwave_protocol.md)
 
-2. **ESP32-C6 to Desktop Communication**
-   - **Wi-Fi**: Standard HTTP/WebSocket API for configuration and data streaming
+2. **ESP32-C6 to Application Communication**
    - **Bluetooth LE**: Custom GATT service for presence data and configuration
    - **USB**: Serial communication for debugging and direct control
    - Real-time data streaming protocol for multi-target information
@@ -264,6 +265,11 @@ The system supports multiple communication methods:
        ]
      }
      ```
+
+## Troubleshooting
+
+- WiP
+
 
 ## Use Cases
 
@@ -302,7 +308,8 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## Acknowledgments
 
 - [DFRobot](https://www.dfrobot.com/) for the SEN0395 mmWave radar sensor
-- [Espressif](https://www.espressif.com/) for the ESP32-C6 microcontroller and ESP-IDF framework
+- [Espressif](https://www.espressif.com/) for the ESP32-C6 microcontroller
+- [ArduinoIDE](https://docs.espressif.com/projects/arduino-esp32/en/latest/getting_started.html#about-arduino-esp32) for Arduino IDE and ESP32 Support
 - [Tauri](https://tauri.app/) for the desktop application framework
 - [Svelte](https://svelte.dev/) for the frontend framework
 - [Tailwind CSS](https://tailwindcss.com/) for UI styling
