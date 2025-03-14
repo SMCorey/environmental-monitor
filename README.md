@@ -1,12 +1,54 @@
 # Presence Detection System
 
-A complete IoT solution for accurate presence detection using mmWave radar technology, Bluetooth 5.0 LE, plus a cross-platform desktop application.
+
+A Simple IoT Project for presence detection using mmWave radar technology, using MQTT, plus a cross-platform desktop application.
+
 
 ## Overview
 
 This project consists of two main components:
 1. **IoT Device**: ESP32-C6 based hardware with DFRobot SEN0395 mmWave radar sensor
 2. **Desktop Application**: Cross-platform application built with Tauri, Svelte, TypeScript, and Tailwind CSS
+
+
+## Technology Choices
+
+This project leverages a carefully selected technology stack to provide an optimal balance of performance, developer experience, and cross-platform compatibility.
+
+### Why Tauri + Rust
+
+- **Incredibly Light Footprint**: Tauri applications are significantly smaller than Electron alternatives (3-10MB vs 100MB+), resulting in faster downloads, updates, and less resource usage.
+- **Enhanced Security**: Rust's memory safety guarantees provide robust security without runtime overhead.
+- **Performance Efficiency**: Rust's low-level control and zero-cost abstractions make it well-suited for processing real-time sensor data streams without introducing latency or performance bottlenecks.
+- **Cross-Platform Compatibility**: Build once and deploy across Windows, macOS, Linux, and mobile with native look and feel, dramatically reducing maintenance overhead.
+
+### Why Svelte + TypeScript
+
+- **Reactive by Design**: Svelte's built-in reactivity system is ideal for displaying continuously updating sensor data with minimal code and maximum performance.
+- **Reduced Bundle Size**: Unlike traditional frameworks that ship their entire runtime to the browser, Svelte compiles components into highly optimized vanilla JavaScript at build time. This "disappearing framework" approach eliminates runtime overhead and results in significantly smaller bundles, perfectly complementing Tauri's lightweight philosophy.
+- **Type Safety**: TypeScript provides compile-time error checking, better IDE support, and self-documenting code through its type system. This reduces runtime errors and simplifies maintenance, particularly valuable when multiple developers collaborate on a complex codebase.
+- **Developer Experience**: Svelte's straightforward, declarative approach to building UIs reduces development time and makes maintenance more intuitive.
+
+### MQTT for Connectivity
+
+The project uses MQTT for device-to-application communication, offering several advantages:
+
+- **Lightweight Protocol**: Designed for constrained devices and low-bandwidth, high-latency networks—perfect for IoT applications.
+- **Publish/Subscribe Pattern**: Enables flexible data distribution with minimal network overhead.
+- **Quality of Service Options**: Configurable message delivery guarantees ensure critical presence data is never lost.
+- **Widespread Support**: Robust client libraries and broker implementations across platforms.
+
+The desktop application leverages the operating system's native networking capabilities for WiFi connectivity, simplifying setup and improving reliability across platforms.
+
+### Tailwind CSS for UI
+
+- **Utility-First Approach**: Enables rapid UI development without leaving your HTML/Svelte files.
+- **Consistent Design System**: Provides a cohesive look and feel across the entire application.
+- **Minimal CSS Overhead**: Only includes the styles you actually use, keeping the application lightweight.
+
+Together, this technology stack delivers a responsive, efficient, and secure application capable of handling complex real-time sensor data while providing an intuitive and pleasant user experience.
+
+
 
 ## IoT Device
 
@@ -87,6 +129,8 @@ This project consists of two main components:
 - **Firmware Updates**: Serial port configuration and updates supported
 - **Operating Temperature**: -40~85℃
 
+
+
 ## Desktop Application
 
 ### Features
@@ -94,10 +138,6 @@ This project consists of two main components:
 - Real-time presence detection visualization with radar display
 - Multi-target tracking with distance, angle, and movement direction
 - Confidence level monitoring and display
-- Historical data logging and analysis
-- Multiple device management
-- Customizable alerts and notifications
-- Device configuration and firmware updates
 
 ### Visualization Interface
 
@@ -117,28 +157,15 @@ The application features an advanced radar-style visualization that displays:
 
 ### Installation
 
-#### Pre-built Binaries
-Download the latest release for your platform from the [Releases](https://github.com/yourusername/presence-detection/releases) page.
+#### TODO
 
-#### Build from Source
-1. Clone this repository
-2. Navigate to the `/app` directory
-3. Install Rust if not already installed (https://rustup.rs/)
-4. For development:
-   ```
-   cargo tauri dev
-   ```
-5. For production build:
-   ```
-   cargo tauri build
-   ```
+
 
 ### Key Application Features
 
 #### 1. Dashboard
 - At-a-glance system status
 - Real-time occupancy information
-- Quick access to all devices and settings
 
 #### 2. Radar View
 - Interactive radar visualization as shown above
@@ -146,17 +173,10 @@ Download the latest release for your platform from the [Releases](https://github
 - Historical trail visualization for movement patterns
 - Filtering options (by distance, confidence, movement)
 
-#### 3. Analytics
-- Occupancy trends and patterns
-- Heatmap generation for space utilization
-- Movement flow analysis
-- Data export for external processing
-
 #### 4. Device Management
-- Add, configure, and update multiple devices
+- MQTT management
 - Sensor parameter adjustment
-- Firmware updates
-- Power management settings
+
 
 ### System Requirements
 
@@ -164,8 +184,8 @@ Download the latest release for your platform from the [Releases](https://github
 - ~~**macOS**: macOS 10.15 (Catalina) or later~~ (macOS support at a later release)
 - ~~**Linux**: Ubuntu 20.04 or equivalent~~ (Linux support at a later release)
 - **Connectivity**: One of the following:
-  - ~~Wi-Fi (2.4 GHz)~~ (Future release)
-  - Bluetooth 5.0 compatible
+  - Wi-Fi (2.4 GHz)
+  - ~~Bluetooth 5.0 compatible~~ (Future release)
   - ~~Thread or Zigbee network (if using those protocols)~~ (Future release)
 
 ## Development
@@ -189,10 +209,7 @@ presence-detection/
 │   ├── schematics/           # Circuit schematics
 │   └── enclosure/            # 3D printable enclosure files
 └── docs/                     # Documentation
-    ├── api/                  # API documentation
-    ├── protocol/             # Communication protocol specifications
-    ├── mmwave_commands/      # mmWave sensor command reference
-    └── user-guide/           # User guides and tutorials
+
 ```
 
 ### Build Requirements
@@ -201,15 +218,17 @@ presence-detection/
 - Arduino IDE 2.0 or later
 - ESP32 Arduino Core (using Boards Manager)
 - Required libraries:
-  - Arduino library for mmWave Radar SEN0395
-  - ArduinoBLE (for BLE functionality)
+  - Arduino library for mmWave Radar SEN0395 
+  - Arduino WiFi libraries (for WiFi connectivity)
+  - Arduino MQTT libraries
 
 #### Desktop Application
 - Rust 1.65 or later
+- pnpm
 - Platform-specific build dependencies for Tauri:
   - **Windows**: Microsoft Visual Studio C++ Build Tools
-  - **macOS**: Xcode Command Line Tools
-  - **Linux**: `build-essential`, `libwebkit2gtk-4.0-dev`, `libssl-dev`, and other Tauri dependencies 
+  - ~~**macOS**: Xcode Command Line Tools~~
+  - ~~**Linux**: `build-essential`, `libwebkit2gtk-4.0-dev`, `libssl-dev`, and other Tauri dependencies~~
 
 ### Communication Protocols
 
@@ -250,6 +269,7 @@ The system supports multiple communication methods:
 ## Troubleshooting
 
 - WiP
+
 
 ## Use Cases
 
