@@ -5,7 +5,7 @@
     <img src="https://img.shields.io/badge/Tauri-1.x-purple?style=flat-square" alt="Tauri">
     <img src="https://img.shields.io/badge/Svelte-3.x-orange?style=flat-square" alt="Svelte">
     <img src="https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square" alt="TypeScript">
-    <img src="https://img.shields.io/badge/mmWave-24GHz-green?style=flat-square" alt="mmWave">
+    <img src="https://img.shields.io/badge/mmWave-2.4GHz-green?style=flat-square" alt="mmWave">
     <img src="https://img.shields.io/badge/MQTT-Protocol-brightgreen?style=flat-square" alt="MQTT">
   </p>
   <p>A Simple IoT Project for presence detection using mmWave radar technology, using MQTT, plus a cross-platform desktop application.</p>
