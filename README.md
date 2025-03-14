@@ -1,17 +1,24 @@
-# Presence Detection System
+<div align="center">
+  <h1>Presence Detection System</h1>
+  <p>
+    <img src="https://img.shields.io/badge/ESP32-C6-blue?style=flat-square" alt="ESP32-C6">
+    <img src="https://img.shields.io/badge/Tauri-1.x-purple?style=flat-square" alt="Tauri">
+    <img src="https://img.shields.io/badge/Svelte-3.x-orange?style=flat-square" alt="Svelte">
+    <img src="https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square" alt="TypeScript">
+    <img src="https://img.shields.io/badge/mmWave-24GHz-green?style=flat-square" alt="mmWave">
+    <img src="https://img.shields.io/badge/MQTT-Protocol-brightgreen?style=flat-square" alt="MQTT">
+  </p>
+  <p>A Simple IoT Project for presence detection using mmWave radar technology, using MQTT, plus a cross-platform desktop application.</p>
+</div>
 
-
-A Simple IoT Project for presence detection using mmWave radar technology, using MQTT, plus a cross-platform desktop application.
-
-
-## Overview
+## 📋 Overview
 
 This project consists of two main components:
 1. **IoT Device**: ESP32-C6 based hardware with DFRobot SEN0395 mmWave radar sensor
 2. **Desktop Application**: Cross-platform application built with Tauri, Svelte, TypeScript, and Tailwind CSS
 
 
-## Technology Choices
+## 🔧 Technology Choices
 
 This project leverages a carefully selected technology stack to provide an optimal balance of performance, developer experience, and cross-platform compatibility.
 
@@ -50,28 +57,45 @@ Together, this technology stack delivers a responsive, efficient, and secure app
 
 
 
-## IoT Device
+## 📡 IoT Device
 
 ### Hardware Components
 
-- **Microcontroller**: ESP32-C6 (featuring Wi-Fi 6, Bluetooth 5.0 LE, Zigbee 3.0, and Thread 1.3)
-- **Sensor**: DFRobot SEN0395 24GHz mmWave radar sensor
-- **Power**: 3.6-5V DC input (USB-C connector)
-- **Connectivity**: Multiple protocols (Wi-Fi, BLE, Zigbee, Thread)
-- **Optional**: RGB LED for status indication, additional GPIO connections for external triggers
+<table>
+  <tr>
+    <td><b>Microcontroller</b></td>
+    <td>ESP32-C6 (featuring Wi-Fi 6, Bluetooth 5.0 LE, Zigbee 3.0, and Thread 1.3)</td>
+  </tr>
+  <tr>
+    <td><b>Sensor</b></td>
+    <td>DFRobot SEN0395 24GHz mmWave radar sensor</td>
+  </tr>
+  <tr>
+    <td><b>Power</b></td>
+    <td>3.6-5V DC input (USB-C connector)</td>
+  </tr>
+  <tr>
+    <td><b>Connectivity</b></td>
+    <td>Multiple protocols (Wi-Fi, BLE, Zigbee, Thread)</td>
+  </tr>
+  <tr>
+    <td><b>Optional</b></td>
+    <td>RGB LED for status indication, additional GPIO connections for external triggers</td>
+  </tr>
+</table>
 
 ### Features
 
-- Presence detection using mmWave radar technology (detects both stationary and moving humans)
-- Multi-target tracking with precise distance, angle, and movement information
-- Accurate detection even for sleeping persons or minimal movement
-- Up to 9m detection range with 100°×40° beam angle
-- Configurable detection zones and parameters via serial interface
-- Confidence level reporting for detection reliability assessment
-- Movement direction determination (approaching, receding, lateral movement)
-- Low power consumption (90mA typical operating current)
-- Strong anti-interference ability against environmental factors (temperature, humidity, dust, light, etc.)
-- LED status indicators for easy troubleshooting
+- ✅ Non-intrusive presence detection using mmWave radar technology (detects both stationary and moving humans)
+- ✅ Multi-target tracking with precise distance, angle, and movement information
+- ✅ Accurate detection even for sleeping persons or minimal movement
+- ✅ Up to 9m detection range with 100°×40° beam angle
+- ✅ Configurable detection zones and parameters via serial interface
+- ✅ Confidence level reporting for detection reliability assessment
+- ✅ Movement direction determination (approaching, receding, lateral movement)
+- ✅ Low power consumption (90mA typical operating current)
+- ✅ Strong anti-interference ability against environmental factors (temperature, humidity, dust, light, etc.)
+- ✅ LED status indicators for easy troubleshooting
 
 ### Setup Instructions
 
@@ -110,15 +134,20 @@ Together, this technology stack delivers a responsive, efficient, and secure app
 
 ### Technical Specifications
 
-#### ESP32-C6 Microcontroller
+<details>
+<summary><b>ESP32-C6 Microcontroller</b></summary>
+
 - **Wi-Fi**: 2.4 GHz Wi-Fi 6 (802.11ax)
 - **Bluetooth**: Bluetooth 5.0 LE
 - **Other Protocols**: Zigbee 3.0, Thread 1.3 (IEEE 802.15.4)
 - **Flash Memory**: 8MB SPI flash
 - **Operating Voltage**: 3.3V (with onboard 5V to 3.3V LDO)
 - **USB Interface**: USB 2.0 full-speed (12 Mbps)
+</details>
 
-#### mmWave Radar Sensor (SEN0395)
+<details>
+<summary><b>mmWave Radar Sensor (SEN0395)</b></summary>
+
 - **Technology**: FMCW (Frequency Modulated Continuous Wave) radar
 - **Frequency**: 24GHz millimeter-wave
 - **Detection Range**: Up to 9 meters
@@ -128,10 +157,10 @@ Together, this technology stack delivers a responsive, efficient, and secure app
 - **Communication**: Serial UART (115200 baud) and GPIO outputs
 - **Firmware Updates**: Serial port configuration and updates supported
 - **Operating Temperature**: -40~85℃
+</details>
 
 
-
-## Desktop Application
+## 💻 Desktop Application
 
 ### Features
 
@@ -141,7 +170,9 @@ Together, this technology stack delivers a responsive, efficient, and secure app
 
 ### Visualization Interface
 
-![Radar Visualization Interface](./docs/images/radar_visualization.png)
+<p align="center">
+  <img src="./docs/radar_visualization.png" alt="Radar Visualization Interface" width="700">
+</p>
 
 The application features an advanced radar-style visualization that displays:
 
@@ -180,15 +211,31 @@ The application features an advanced radar-style visualization that displays:
 
 ### System Requirements
 
-- **Windows**: Windows 10 or later
-- ~~**macOS**: macOS 10.15 (Catalina) or later~~ (macOS support at a later release)
-- ~~**Linux**: Ubuntu 20.04 or equivalent~~ (Linux support at a later release)
-- **Connectivity**: One of the following:
-  - Wi-Fi (2.4 GHz)
-  - ~~Bluetooth 5.0 compatible~~ (Future release)
-  - ~~Thread or Zigbee network (if using those protocols)~~ (Future release)
+<table>
+  <tr>
+    <td><b>Windows</b></td>
+    <td>Windows 10 or later</td>
+  </tr>
+  <tr>
+    <td><b>macOS</b></td>
+    <td><s>macOS 10.15 (Catalina) or later</s></td>
+  </tr>
+  <tr>
+    <td><b>Linux</b></td>
+    <td><s>Ubuntu 20.04 or equivalent</s></td>
+  </tr>
+  <tr>
+    <td><b>Connectivity</b></td>
+    <td>
+      One of the following:<br>
+      - Wi-Fi (2.4 GHz)<br>
+      - <s>Bluetooth 5.0 compatible</s><br>
+      - <s>Thread or Zigbee network (if using those protocols)</s>
+    </td>
+  </tr>
+</table>
 
-## Development
+## 🛠️ Development
 
 ### Repository Structure
 
@@ -209,26 +256,31 @@ presence-detection/
 │   ├── schematics/           # Circuit schematics
 │   └── enclosure/            # 3D printable enclosure files
 └── docs/                     # Documentation
-
 ```
 
 ### Build Requirements
 
-#### Firmware
+<details>
+<summary><b>Firmware</b></summary>
+
 - Arduino IDE 2.0 or later
 - ESP32 Arduino Core (using Boards Manager)
 - Required libraries:
   - Arduino library for mmWave Radar SEN0395 
   - Arduino WiFi libraries (for WiFi connectivity)
   - Arduino MQTT libraries
+</details>
 
-#### Desktop Application
+<details>
+<summary><b>Desktop Application</b></summary>
+
 - Rust 1.65 or later
 - pnpm
 - Platform-specific build dependencies for Tauri:
   - **Windows**: Microsoft Visual Studio C++ Build Tools
   - ~~**macOS**: Xcode Command Line Tools~~
   - ~~**Linux**: `build-essential`, `libwebkit2gtk-4.0-dev`, `libssl-dev`, and other Tauri dependencies~~
+</details>
 
 ### Communication Protocols
 
@@ -241,82 +293,89 @@ The system supports multiple communication methods:
    - Extended protocol for detailed target information (distance, angle, confidence, movement)
    - Details in the [mmWave sensor protocol documentation](./docs/protocol/mmwave_protocol.md)
 
-2. **ESP32-C6 to Application Communication**
-   - **Bluetooth LE**: Custom GATT service for presence data and configuration
+2. **ESP32-C6 to Desktop Communication**
+   - **Wi-Fi**: Leverage applications operating systems native WiFi solution for connectivity
+   - **MQTT**: Protocol used to transmit data over WiFi connectivity.
    - **USB**: Serial communication for debugging and direct control
    - Real-time data streaming protocol for multi-target information
    - Full protocol specifications in the [communication documentation](./docs/protocol/README.md)
 
 3. **Data Format**
-   - JSON-structured data for target information:
-     ```json
-     {
-       "targets": [
-         {
-           "id": 0,
-           "distance": 2.75,
-           "angle": -15.2,
-           "confidence": 204,
-           "movement": "approaching",
-           "velocity": 0.3,
-           "isActive": true
-         },
-         ...
-       ]
-     }
-     ```
+   ```json
+   {
+     "targets": [
+       {
+         "id": 0,
+         "distance": 2.75,
+         "angle": -15.2,
+         "confidence": 204,
+         "movement": "approaching",
+         "velocity": 0.3,
+         "isActive": true
+       },
+       ...
+     ]
+   }
+   ```
 
-## Troubleshooting
+## 🏠 Use Cases
 
-- WiP
-
-
-## Use Cases
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+<div>
 
 ### Smart Home
 - Room presence detection for lighting and HVAC control
 - Security monitoring with multi-person tracking
 - Sleep monitoring without privacy concerns of cameras
 - Energy optimization based on occupancy patterns
+</div>
+
+<div>
 
 ### Office Environments
 - Meeting room utilization analytics
 - Desk occupancy monitoring
 - Traffic flow analysis for space optimization
 - Triggering of presentation systems based on presence
+</div>
+
+<div>
 
 ### Retail and Public Spaces
 - Customer flow analysis
 - Queue management
 - Occupancy counting with directional information
 - Triggering of interactive displays when approached
+</div>
+
+<div>
 
 ### Industrial Applications
 - Safety zone monitoring
 - Process automation based on worker presence
 - Equipment activation/deactivation based on proximity
 - Unauthorized access detection
+</div>
+</div>
 
-## Contributing
+## 👥 Contributing
 
 N/A
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - [DFRobot](https://www.dfrobot.com/) for the SEN0395 mmWave radar sensor
-- [Espressif](https://www.espressif.com/) for the ESP32-C6 microcontroller
-- [ArduinoIDE](https://docs.espressif.com/projects/arduino-esp32/en/latest/getting_started.html#about-arduino-esp32) for Arduino IDE and ESP32 Support
+- [Espressif](https://www.espressif.com/) for the ESP32-C6 microcontroller and ESP-IDF framework
 - [Tauri](https://tauri.app/) for the desktop application framework
 - [Svelte](https://svelte.dev/) for the frontend framework
 - [Tailwind CSS](https://tailwindcss.com/) for UI styling
 
-## References
+## 📚 References
 
 - [ESP32-C6 Technical Documentation](https://www.espressif.com/en/products/socs/esp32-c6)
 - [DFRobot SEN0395 mmWave Radar Sensor Documentation](https://wiki.dfrobot.com/mmWave_Radar_Human_Presence_Detection_SKU_SEN0395)
 - [ESP-IDF Programming Guide](https://docs.espressif.com/projects/esp-idf/en/latest/esp32c6/index.html)
-
