@@ -8,7 +8,7 @@
     <img src="https://img.shields.io/badge/mmWave-2.4GHz-green?style=flat-square" alt="mmWave">
     <img src="https://img.shields.io/badge/MQTT-Protocol-brightgreen?style=flat-square" alt="MQTT">
   </p>
-  <p>A Simple IoT Project for presence detection using mmWave radar technology, using MQTT, plus a cross-platform desktop application.</p>
+  <p>A Simple IoT Project for presence detection using mmWave radar technology, MQTT, and a cross-platform desktop application.</p>
 </div>
 
 ## 📋 Overview
