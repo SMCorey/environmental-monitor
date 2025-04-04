@@ -16,6 +16,7 @@ export const ssr = false;  // NOT SURE HOW IT STILL WORKS WITHOUT THIS LINE -->
     <a href="/">Home</a>
     <a href="/mqtt">MQTT Client</a>
     <a href="/visualizer">Visual Data</a>
+    <a href="/activity">Activity Log</a>
   </div>
 </nav>
 
