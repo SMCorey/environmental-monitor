@@ -1,17 +1,9 @@
-<!-- // Tauri doesn't have a Node.js server to do proper SSR
-// so we will use adapter-static to prerender the app (SSG)
-// See: https://v2.tauri.app/start/frontend/sveltekit/ for more info -->
-
-<!-- export const prerender = true;  // NOT SURE HOW IT STILL WORKS WITHOUT THIS LINE
-export const ssr = false;  // NOT SURE HOW IT STILL WORKS WITHOUT THIS LINE -->
-
-
 <script lang="ts">
-  import '../app.css';
-  import { page } from '$app/stores';
+  import "../app.css";
+  import { page } from "$app/stores";
+  import ThemeSwitcher from "../components/ThemeSwitcher.svelte";
   $: currentPath = $page.url.pathname;
 </script>
-
 
 <nav>
   <div class="nav-container">
@@ -22,20 +14,24 @@ export const ssr = false;  // NOT SURE HOW IT STILL WORKS WITHOUT THIS LINE -->
       </span>
       <span class="brand-text">Presence Detection</span>
     </div>
-    
+
     <div class="nav-links">
-      <a href="/" class={currentPath === '/' ? 'active' : ''}>
+      <a href="/" class={currentPath === "/" ? "active" : ""}>
         <span class="nav-text">Home</span>
       </a>
-      <a href="/mqtt" class={currentPath === '/mqtt' ? 'active' : ''}>
+      <a href="/mqtt" class={currentPath === "/mqtt" ? "active" : ""}>
         <span class="nav-text">MQTT Client</span>
       </a>
-      <a href="/visualizer" class={currentPath === '/visualizer' ? 'active' : ''}>
+      <a
+        href="/visualizer"
+        class={currentPath === "/visualizer" ? "active" : ""}
+      >
         <span class="nav-text">Visual Data</span>
       </a>
-      <a href="/activity" class={currentPath === '/activity' ? 'active' : ''}>
+      <a href="/activity" class={currentPath === "/activity" ? "active" : ""}>
         <span class="nav-text">Activity Log</span>
       </a>
+      <ThemeSwitcher />
     </div>
   </div>
 </nav>
