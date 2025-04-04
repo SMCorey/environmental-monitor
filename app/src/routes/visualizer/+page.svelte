@@ -25,6 +25,28 @@
   let unlistenMqttMessage: Function | null = null;
   let unlistenMqttEvent: Function | null = null;
 
+  // Temporary mock data for publishing after connection
+  const mockTargets = [
+    {
+      id: 1,
+      distance: 2.35,
+      angle: -15.2,
+      confidence: 198,
+      movement: "approaching",
+      velocity: 0.2,
+      isActive: true
+    },
+    {
+      id: 2,
+      distance: 3.8,
+      angle: 5.6,
+      confidence: 172,
+      movement: "stationary",
+      velocity: 0,
+      isActive: true
+    }
+  ];
+
   // Set up MQTT listeners and auto-connect on mount
   onMount(async () => {
     try {
@@ -58,8 +80,17 @@
       if (isConnected) {
         try {
           await invoke('subscribe_mqtt', { topic: "test/topic", qosLevel: 0 });
+
+          // Publish mock data after subscribing
+          await invoke('publish_mqtt', {
+            topic: "test/topic",
+            payload: JSON.stringify({ targets: mockTargets }),
+            qosLevel: 0,
+            retain: false
+          });
+
         } catch (subError) {
-          console.error('Auto-subscribe error:', subError);
+          console.error('Auto-subscribe or publish error:', subError);
         }
       }
     });
