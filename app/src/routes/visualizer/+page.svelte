@@ -2,42 +2,58 @@
   import { onMount, onDestroy } from 'svelte';
   import { invoke } from '@tauri-apps/api/core';
   import { listen } from '@tauri-apps/api/event';
-  import { 
-    radarTargets, 
-    connectionStatus, 
-    isConnected, 
+  import {
+    radarTargets,
+    connectionStatus,
+    isConnected,
     connectionError,
-    updateTargets 
+    updateTargets
   } from '../../stores/radarStore';
 
-  // Subscribe to stores
   $: targets = $radarTargets;
   $: error = $connectionError;
   $: connectionState = $connectionStatus;
   $: connected = $isConnected;
 
-  // Functions to remove MQTT listeners when unmounting
   let unlistenMqttMessage: Function | null = null;
   let unlistenMqttEvent: Function | null = null;
-  
-  // Interval for publishing mock data
   let publishInterval: number | null = null;
 
-  // Function to generate varying mock data
+  // Sweep animation state
+  let sweepAngle = -90;
+  let sweepTimer: number;
+
+  onMount(() => {
+    // Radar sweep rotates once every 10s
+    const scanDuration = 5000;
+    const fps = 60;
+    const totalSteps = (scanDuration / 1000) * fps;
+    const step = 360 / totalSteps;
+
+    sweepTimer = window.setInterval(() => {
+      sweepAngle = (sweepAngle + step) % 360;
+    }, 1000 / fps);
+  });
+
+  onDestroy(() => {
+    if (unlistenMqttMessage) unlistenMqttMessage();
+    if (unlistenMqttEvent) unlistenMqttEvent();
+    if (publishInterval !== null) window.clearInterval(publishInterval);
+    if (sweepTimer) window.clearInterval(sweepTimer);
+    if (connected) handleDisconnect();
+  });
+
   function generateMockData() {
-    // Possible movement states
-    const movementStates = ["approaching", "stationary", "departing", "crossing"];
-    
-    // Start with base mock data
+    const movementStates = ['approaching', 'stationary', 'departing', 'crossing'];
     const mockData = [
       {
         id: 1,
-        distance: 2.35 + (Math.random() * 0.8 - 0.4), // Vary distance more
-        angle: -15.2 + (Math.random() * 10 - 5),  // Larger angle variation
-        confidence: Math.floor(150 + Math.random() * 100), // Wider confidence range
-        movement: movementStates[Math.floor(Math.random() * 3)], // More movement variety
-        velocity: Math.random() * 0.8, // More velocity variety
-        isActive: Math.random() > 0.05 // 5% chance to become inactive
+        distance: 2.35 + (Math.random() * 0.8 - 0.4),
+        angle: -15.2 + (Math.random() * 10 - 5),
+        confidence: Math.floor(150 + Math.random() * 100),
+        movement: movementStates[Math.floor(Math.random() * 3)],
+        velocity: Math.random() * 0.8,
+        isActive: Math.random() > 0.05
       },
       {
         id: 2,
@@ -46,11 +62,10 @@
         confidence: Math.floor(120 + Math.random() * 120),
         movement: movementStates[Math.floor(Math.random() * 4)],
         velocity: Math.random() * 0.6,
-        isActive: Math.random() > 0.08 // 8% chance to become inactive
+        isActive: Math.random() > 0.08
       }
     ];
-    
-    // Occasionally add target 3 (25% chance)
+
     if (Math.random() > 0.75) {
       mockData.push({
         id: 3,
@@ -59,11 +74,10 @@
         confidence: Math.floor(100 + Math.random() * 150),
         movement: movementStates[Math.floor(Math.random() * 4)],
         velocity: Math.random() * 1.0,
-        isActive: Math.random() > 0.1 // 10% chance to become inactive
+        isActive: Math.random() > 0.1
       });
     }
-    
-    // Occasionally add target 4 (15% chance)
+
     if (Math.random() > 0.85) {
       mockData.push({
         id: 4,
@@ -72,11 +86,10 @@
         confidence: Math.floor(80 + Math.random() * 120),
         movement: movementStates[Math.floor(Math.random() * 4)],
         velocity: Math.random() * 1.2,
-        isActive: Math.random() > 0.15 // 15% chance to become inactive
+        isActive: Math.random() > 0.15
       });
     }
-    
-    // Very occasionally add target 5 (5% chance)
+
     if (Math.random() > 0.95) {
       mockData.push({
         id: 5,
@@ -85,53 +98,49 @@
         confidence: Math.floor(70 + Math.random() * 80),
         movement: movementStates[Math.floor(Math.random() * 4)],
         velocity: Math.random() * 0.4,
-        isActive: Math.random() > 0.2 // 20% chance to become inactive
+        isActive: Math.random() > 0.2
       });
     }
-    
-    // For targets that became inactive, adjust values accordingly
+
     mockData.forEach(target => {
       if (!target.isActive) {
-        target.confidence = Math.floor(target.confidence * 0.6); // Lower confidence for inactive targets
-        target.velocity = 0; // No velocity for inactive targets
-        target.movement = "stationary"; // Always stationary when inactive
-      } else if (target.movement === "stationary") {
-        target.velocity = Math.min(target.velocity, 0.1); // Very low velocity when stationary
-      } else if (target.movement === "departing") {
-        target.distance += 0.2; // Departing targets move slightly farther
-      } else if (target.movement === "approaching") {
-        target.distance -= 0.1; // Approaching targets move slightly closer
+        target.confidence = Math.floor(target.confidence * 0.6);
+        target.velocity = 0;
+        target.movement = 'stationary';
+      } else if (target.movement === 'stationary') {
+        target.velocity = Math.min(target.velocity, 0.1);
+      } else if (target.movement === 'departing') {
+        target.distance += 0.2;
+      } else if (target.movement === 'approaching') {
+        target.distance -= 0.1;
       }
     });
-    
+
     return mockData;
   }
-  
-  // Function to publish mock data
+
   async function publishMockData() {
     if (!connected) return;
-    
+
     try {
       const mockTargets = generateMockData();
-      
       await invoke('publish_mqtt', {
-        topic: "test/topic",
+        topic: 'test5/tauri/radar',
         payload: JSON.stringify({ targets: mockTargets }),
         qosLevel: 0,
         retain: false
       });
-      
-      console.log("Published mock data:", mockTargets);
+
+      console.log('Published mock data:', mockTargets);
     } catch (error) {
       console.error('Error publishing mock data:', error);
     }
   }
 
-  // Set up MQTT listeners and auto-connect on mount
   onMount(async () => {
     try {
       await invoke('connect_mqtt', {
-        brokerAddress: "broker.emqx.io",
+        brokerAddress: 'broker.emqx.io',
         port: 1883,
         clientIdPrefix: undefined
       });
@@ -145,30 +154,24 @@
         const { payload } = event.payload as { topic: string; payload: string };
         const parsed = JSON.parse(payload);
         if (Array.isArray(parsed.targets)) {
-          // Update store instead of local state
           updateTargets(parsed.targets);
         }
       } catch (e) {
-        connectionError.set("Failed to parse incoming data.");
+        connectionError.set('Failed to parse incoming data.');
         console.error(e);
       }
     });
 
     unlistenMqttEvent = await listen('mqtt_event', async (event) => {
-      const { message, status } = event.payload as { message: string, status: string };
+      const { message, status } = event.payload as { message: string; status: string };
       connectionStatus.set(message);
       isConnected.set(status === 'connected');
-      
+
       if (status === 'connected') {
         try {
-          await invoke('subscribe_mqtt', { topic: "test/topic", qosLevel: 0 });
-
-          // Initial publish of mock data
+          await invoke('subscribe_mqtt', { topic: 'test5/tauri/radar', qosLevel: 0 });
           await publishMockData();
-          
-          // Set up interval to publish mock data every 10 seconds
-          publishInterval = window.setInterval(publishMockData, 10000);
-
+          publishInterval = window.setInterval(publishMockData, 5000);
         } catch (subError) {
           console.error('Auto-subscribe or publish error:', subError);
         }
@@ -176,20 +179,6 @@
     });
   });
 
-  // Disconnect and cleanup when component is destroyed
-  onDestroy(() => {
-    if (unlistenMqttMessage) unlistenMqttMessage();
-    if (unlistenMqttEvent) unlistenMqttEvent();
-    
-    // Clear the publishing interval
-    if (publishInterval !== null) {
-      window.clearInterval(publishInterval);
-    }
-    
-    if (connected) handleDisconnect();
-  });
-
-  // Disconnect from MQTT broker
   async function handleDisconnect() {
     try {
       await invoke('disconnect_mqtt');
@@ -200,27 +189,37 @@
 </script>
 
 <main>
-  <h1>Radar Target Visualization</h1>
+  <h1>Radar Visualization</h1>
 
   <p class="status">Status: {connectionState}</p>
 
   {#if targets.length === 0}
     <p>No target data received yet.</p>
   {:else}
-    <!-- Radar-style visualization with gridlines and center point -->
-    <svg width="400" height="400" viewBox="-200 -200 400 400" style="background:#eef; border-radius: 50%;">
-      <circle cx="0" cy="0" r="190" stroke="#ccc" stroke-width="1" fill="none" />
-      <line x1="-190" y1="0" x2="190" y2="0" stroke="#ccc" stroke-width="0.5" />
-      <line x1="0" y1="-190" x2="0" y2="190" stroke="#ccc" stroke-width="0.5" />
-      <line x1="-135" y1="-135" x2="135" y2="135" stroke="#eee" stroke-width="0.5" />
-      <line x1="-135" y1="135" x2="135" y2="-135" stroke="#eee" stroke-width="0.5" />
-      <circle cx="0" cy="0" r="4" fill="black" />
+    <svg width="400" height="400" viewBox="-200 -200 400 400" style="background:#111; border-radius: 50%;">
+      <circle cx="0" cy="0" r="190" stroke="#444" stroke-width="1" fill="none" />
+      <line x1="-190" y1="0" x2="190" y2="0" stroke="#333" stroke-width="0.5" />
+      <line x1="0" y1="-190" x2="0" y2="190" stroke="#333" stroke-width="0.5" />
+      <line x1="-135" y1="-135" x2="135" y2="135" stroke="#333" stroke-width="0.5" />
+      <line x1="-135" y1="135" x2="135" y2="-135" stroke="#333" stroke-width="0.5" />
+      <circle cx="0" cy="0" r="4" fill="white" />
+
+      <!-- Radar sweeping line -->
+      <line
+        x1="0"
+        y1="0"
+        x2={190 * Math.cos((sweepAngle * Math.PI) / 180)}
+        y2={190 * Math.sin((sweepAngle * Math.PI) / 180)}
+        stroke="lime"
+        stroke-width="2"
+        stroke-opacity="0.8"
+      />
 
       {#each targets as t}
         <circle
           r={t.isActive ? 6 : 4}
-          fill={t.movement === 'approaching' ? 'green' : 
-                t.movement === 'departing' ? 'orange' : 
+          fill={t.movement === 'approaching' ? 'green' :
+                t.movement === 'departing' ? 'orange' :
                 t.movement === 'crossing' ? 'blue' : 'red'}
           cx={t.distance * 30 * Math.cos((t.angle * Math.PI) / 180)}
           cy={t.distance * 30 * Math.sin((t.angle * Math.PI) / 180)}
@@ -235,7 +234,6 @@ Confidence: {t.confidence}</title>
       {/each}
     </svg>
 
-    <!-- Legend -->
     <div style="margin: 1rem 0; font-size: 0.9rem;">
       <span style="display: inline-block; width: 12px; height: 12px; background: green; border-radius: 50%; margin-right: 6px;"></span>Approaching
       <span style="display: inline-block; width: 12px; height: 12px; background: red; border-radius: 50%; margin: 0 6px 0 12px;"></span>Stationary
