@@ -1,0 +1,257 @@
+main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  h1 {
+    margin-bottom: 1.5rem;
+  }
+  
+  .actions {
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .empty-state {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .hint {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+  
+  .history-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .history-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .target-section {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: #f9f9f9;
+  }
+  
+  .target-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .target-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .stat {
+    display: flex;
+    flex-direction: column;
+    background-color: #f0f0f0;
+    padding: 0.75rem;
+    border-radius: 6px;
+    flex: 1;
+  }
+  
+  .stat-value {
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+  
+  .stat-label {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.25rem;
+  }
+  
+  .status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  .status-badge.active {
+    background-color: #d1fae5;
+    color: #047857;
+  }
+  
+  .status-badge.inactive {
+    background-color: #fee2e2;
+    color: #b91c1c;
+  }
+  
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  th {
+    background-color: #f4f4f4;
+    font-weight: 500;
+  }
+  
+  td.approaching {
+    color: #047857;
+    font-weight: 500;
+  }
+  
+  td.stationary {
+    color: #b91c1c;
+  }
+  
+  td.departing {
+    color: #c2410c;
+    font-weight: 500;
+  }
+  
+  td.crossing {
+    color: #1d4ed8;
+    font-weight: 500;
+  }
+  
+  tr.newest-entry td {
+    background-color: #f0fdf4;
+    animation: highlight-new 3s ease-out;
+  }
+  
+  .more-row td {
+    padding: 0.5rem;
+    text-align: center;
+  }
+  
+  .show-more-btn {
+    background: none;
+    border: none;
+    color: #4f46e5;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .show-more-btn:hover {
+    text-decoration: underline;
+  }
+  
+  .clear-btn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  
+  .clear-btn:hover {
+    background-color: #dc2626;
+  }
+  
+  @keyframes highlight-new {
+    0% { background-color: #dcfce7; }
+    100% { background-color: #f0fdf4; }
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .target-section {
+      background-color: #1f2937;
+      border-color: #374151;
+    }
+    
+    .empty-state {
+      background-color: #1f2937;
+    }
+    
+    .hint {
+      color: #9ca3af;
+    }
+    
+    .stat {
+      background-color: #111827;
+    }
+    
+    .stat-label {
+      color: #9ca3af;
+    }
+    
+    h2 {
+      color: #f9fafb;
+    }
+    
+    th {
+      background-color: #111827;
+      color: #f9fafb;
+    }
+    
+    td {
+      color: #f9fafb;
+      border-color: #374151;
+    }
+    
+    .status-badge.active {
+      background-color: #064e3b;
+      color: #a7f3d0;
+    }
+    
+    .status-badge.inactive {
+      background-color: #7f1d1d;
+      color: #fecaca;
+    }
+    
+    td.approaching {
+      color: #10b981;
+    }
+    
+    td.stationary {
+      color: #ef4444;
+    }
+    
+    td.departing {
+      color: #f97316;
+    }
+    
+    td.crossing {
+      color: #60a5fa;
+    }
+    
+    tr.newest-entry td {
+      background-color: #064e3b;
+      animation: highlight-new-dark 3s ease-out;
+    }
+    
+    @keyframes highlight-new-dark {
+      0% { background-color: #065f46; }
+      100% { background-color: #064e3b; }
+    }
+    
+    .show-more-btn {
+      color: #818cf8;
+    }
+  }
