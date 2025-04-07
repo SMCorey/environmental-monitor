@@ -3,146 +3,41 @@
   import { invoke } from '@tauri-apps/api/core';
   import { listen } from '@tauri-apps/api/event';
   import {
-    radarTargets,
+    currentEnvironmentalData,
     connectionStatus,
     isConnected,
     connectionError,
-    updateTargets
-  } from '../../stores/radarStore';
+    updateEnvironmentalData,
+    updateFromJsonString,
+    environmentalHistory
+  } from '../../stores/dataStore';
 
-  $: targets = $radarTargets;
+  // Subscribe to stores
+  $: data = $currentEnvironmentalData;
   $: error = $connectionError;
   $: connectionState = $connectionStatus;
   $: connected = $isConnected;
+  $: history = $environmentalHistory;
 
+  // MQTT event listeners
   let unlistenMqttMessage: Function | null = null;
   let unlistenMqttEvent: Function | null = null;
-  let publishInterval: number | null = null;
-
-  // Sweep animation state
-  let sweepAngle = -90;
-  let sweepTimer: number;
-
-  onMount(() => {
-    // Radar sweep rotates once every 10s
-    const scanDuration = 5000;
-    const fps = 60;
-    const totalSteps = (scanDuration / 1000) * fps;
-    const step = 360 / totalSteps;
-
-    sweepTimer = window.setInterval(() => {
-      sweepAngle = (sweepAngle + step) % 360;
-    }, 1000 / fps);
-  });
-
-  onDestroy(() => {
-    if (unlistenMqttMessage) unlistenMqttMessage();
-    if (unlistenMqttEvent) unlistenMqttEvent();
-    if (publishInterval !== null) window.clearInterval(publishInterval);
-    if (sweepTimer) window.clearInterval(sweepTimer);
-    if (connected) handleDisconnect();
-  });
-
-  function generateMockData() {
-    const movementStates = ['approaching', 'stationary', 'departing', 'crossing'];
-    const mockData = [
-      {
-        id: 1,
-        distance: 2.35 + (Math.random() * 0.8 - 0.4),
-        angle: -15.2 + (Math.random() * 10 - 5),
-        confidence: Math.floor(150 + Math.random() * 100),
-        movement: movementStates[Math.floor(Math.random() * 3)],
-        velocity: Math.random() * 0.8,
-        isActive: Math.random() > 0.05
-      },
-      {
-        id: 2,
-        distance: 3.8 + (Math.random() * 1.2 - 0.6),
-        angle: 5.6 + (Math.random() * 12 - 6),
-        confidence: Math.floor(120 + Math.random() * 120),
-        movement: movementStates[Math.floor(Math.random() * 4)],
-        velocity: Math.random() * 0.6,
-        isActive: Math.random() > 0.08
-      }
-    ];
-
-    if (Math.random() > 0.75) {
-      mockData.push({
-        id: 3,
-        distance: 5.2 + (Math.random() * 1.5 - 0.75),
-        angle: 30 + (Math.random() * 30 - 15),
-        confidence: Math.floor(100 + Math.random() * 150),
-        movement: movementStates[Math.floor(Math.random() * 4)],
-        velocity: Math.random() * 1.0,
-        isActive: Math.random() > 0.1
-      });
-    }
-
-    if (Math.random() > 0.85) {
-      mockData.push({
-        id: 4,
-        distance: 4.0 + (Math.random() * 2.0 - 1.0),
-        angle: -40 + (Math.random() * 20 - 10),
-        confidence: Math.floor(80 + Math.random() * 120),
-        movement: movementStates[Math.floor(Math.random() * 4)],
-        velocity: Math.random() * 1.2,
-        isActive: Math.random() > 0.15
-      });
-    }
-
-    if (Math.random() > 0.95) {
-      mockData.push({
-        id: 5,
-        distance: 6.5 + (Math.random() * 1.0 - 0.5),
-        angle: 60 + (Math.random() * 25 - 12.5),
-        confidence: Math.floor(70 + Math.random() * 80),
-        movement: movementStates[Math.floor(Math.random() * 4)],
-        velocity: Math.random() * 0.4,
-        isActive: Math.random() > 0.2
-      });
-    }
-
-    mockData.forEach(target => {
-      if (!target.isActive) {
-        target.confidence = Math.floor(target.confidence * 0.6);
-        target.velocity = 0;
-        target.movement = 'stationary';
-      } else if (target.movement === 'stationary') {
-        target.velocity = Math.min(target.velocity, 0.1);
-      } else if (target.movement === 'departing') {
-        target.distance += 0.2;
-      } else if (target.movement === 'approaching') {
-        target.distance -= 0.1;
-      }
-    });
-
-    return mockData;
-  }
-
-  async function publishMockData() {
-    if (!connected) return;
-
-    try {
-      const mockTargets = generateMockData();
-      await invoke('publish_mqtt', {
-        topic: 'test5/tauri/radar',
-        payload: JSON.stringify({ targets: mockTargets }),
-        qosLevel: 0,
-        retain: false
-      });
-
-      console.log('Published mock data:', mockTargets);
-    } catch (error) {
-      console.error('Error publishing mock data:', error);
-    }
-  }
+  
+  // Sample data for testing
+  const sampleData = {
+    temperature: 25.36630058,
+    pressure: 992.87,
+    humidity: 37.7179985,
+    gas: 11.712,
+    altitude: 171.0763855
+  };
 
   onMount(async () => {
     try {
       await invoke('connect_mqtt', {
         brokerAddress: 'broker.emqx.io',
         port: 1883,
-        clientIdPrefix: undefined
+        clientIdPrefix: 'env-monitor'
       });
     } catch (connectError) {
       console.error('Connection error:', connectError);
@@ -152,10 +47,8 @@
     unlistenMqttMessage = await listen('mqtt_message', (event) => {
       try {
         const { payload } = event.payload as { topic: string; payload: string };
-        const parsed = JSON.parse(payload);
-        if (Array.isArray(parsed.targets)) {
-          updateTargets(parsed.targets);
-        }
+        // Pass the JSON string directly to our parser function
+        updateFromJsonString(payload);
       } catch (e) {
         connectionError.set('Failed to parse incoming data.');
         console.error(e);
@@ -169,14 +62,22 @@
 
       if (status === 'connected') {
         try {
-          await invoke('subscribe_mqtt', { topic: 'test5/tauri/radar', qosLevel: 0 });
-          await publishMockData();
-          publishInterval = window.setInterval(publishMockData, 5000);
+          // Subscribe to the environmental sensor topic
+          await invoke('subscribe_mqtt', { topic: 'tauri/sensor', qosLevel: 0 });
+          
+          // Load sample data initially
+          updateEnvironmentalData(sampleData);
         } catch (subError) {
-          console.error('Auto-subscribe or publish error:', subError);
+          console.error('Auto-subscribe error:', subError);
         }
       }
     });
+  });
+
+  onDestroy(() => {
+    if (unlistenMqttMessage) unlistenMqttMessage();
+    if (unlistenMqttEvent) unlistenMqttEvent();
+    if (connected) handleDisconnect();
   });
 
   async function handleDisconnect() {
@@ -186,89 +87,264 @@
       console.error('Disconnection error:', error);
     }
   }
+  
+  // Helper function to get status class based on value thresholds
+  function getStatusClass(value: number, lowThreshold: number, highThreshold: number): string {
+    if (value < lowThreshold) return 'low';
+    if (value > highThreshold) return 'high';
+    return 'normal';
+  }
+  
+  // Function to generate mock environmental data with small variations from current
+  async function publishMockUpdate() {
+    if (!connected || !data) return;
+    
+    try {
+      // Create variations of the current data
+      const mockData = {
+        temperature: data.temperature + (Math.random() * 0.5 - 0.25),
+        pressure: data.pressure + (Math.random() * 1 - 0.5),
+        humidity: data.humidity + (Math.random() * 2 - 1),
+        gas: data.gas + (Math.random() * 0.8 - 0.4),
+        altitude: data.altitude + (Math.random() * 0.5 - 0.25)
+      };
+      
+      // Publish to MQTT
+      await invoke('publish_mqtt', {
+        // SWAP SUBSCRIBE TO THIS TO LOAD FAKE DATA
+        topic: 'tauri/sensor/dev',
+        payload: JSON.stringify(mockData),
+        qosLevel: 0,
+        retain: false
+      });
+      
+      console.log('Published mock data:', mockData);
+    } catch (error) {
+      console.error('Error publishing mock data:', error);
+    }
+  }
 </script>
 
 <main>
-  <h1>Radar Visualization</h1>
+  <h1>Environmental Readings</h1>
 
-  <p class="status">Status: {connectionState}</p>
-
-  {#if targets.length === 0}
-    <p>No target data received yet.</p>
-  {:else}
-    <svg width="400" height="400" viewBox="-200 -200 400 400" style="background:#111; border-radius: 50%;">
-      <circle cx="0" cy="0" r="190" stroke="#444" stroke-width="1" fill="none" />
-      <line x1="-190" y1="0" x2="190" y2="0" stroke="#333" stroke-width="0.5" />
-      <line x1="0" y1="-190" x2="0" y2="190" stroke="#333" stroke-width="0.5" />
-      <line x1="-135" y1="-135" x2="135" y2="135" stroke="#333" stroke-width="0.5" />
-      <line x1="-135" y1="135" x2="135" y2="-135" stroke="#333" stroke-width="0.5" />
-      <circle cx="0" cy="0" r="4" fill="white" />
-
-      <!-- Radar sweeping line -->
-      <line
-        x1="0"
-        y1="0"
-        x2={190 * Math.cos((sweepAngle * Math.PI) / 180)}
-        y2={190 * Math.sin((sweepAngle * Math.PI) / 180)}
-        stroke="lime"
-        stroke-width="2"
-        stroke-opacity="0.8"
-      />
-
-      {#each targets as t}
-        <circle
-          r={t.isActive ? 6 : 4}
-          fill={t.movement === 'approaching' ? 'green' :
-                t.movement === 'departing' ? 'orange' :
-                t.movement === 'crossing' ? 'blue' : 'red'}
-          cx={t.distance * 30 * Math.cos((t.angle * Math.PI) / 180)}
-          cy={t.distance * 30 * Math.sin((t.angle * Math.PI) / 180)}
-          opacity={t.isActive ? 1 : 0.5}
-        >
-          <title>ID: {t.id}
-Distance: {t.distance.toFixed(2)}m
-Angle: {t.angle.toFixed(1)}°
-Movement: {t.movement}
-Confidence: {t.confidence}</title>
-        </circle>
-      {/each}
-    </svg>
-
-    <div style="margin: 1rem 0; font-size: 0.9rem;">
-      <span style="display: inline-block; width: 12px; height: 12px; background: green; border-radius: 50%; margin-right: 6px;"></span>Approaching
-      <span style="display: inline-block; width: 12px; height: 12px; background: red; border-radius: 50%; margin: 0 6px 0 12px;"></span>Stationary
-      <span style="display: inline-block; width: 12px; height: 12px; background: orange; border-radius: 50%; margin: 0 6px 0 12px;"></span>Departing
-      <span style="display: inline-block; width: 12px; height: 12px; background: blue; border-radius: 50%; margin: 0 6px 0 12px;"></span>Crossing
-      <span style="display: inline-block; width: 12px; height: 12px; background: red; opacity: 0.5; border-radius: 50%; margin: 0 6px 0 12px;"></span>Inactive
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Distance (m)</th>
-          <th>Angle (°)</th>
-          <th>Confidence</th>
-          <th>Movement</th>
-          <th>Velocity (m/s)</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each targets as t}
-          <tr>
-            <td>{t.id}</td>
-            <td>{t.distance.toFixed(2)}</td>
-            <td>{t.angle.toFixed(1)}</td>
-            <td>{t.confidence}</td>
-            <td>{t.movement}</td>
-            <td>{t.velocity.toFixed(2)}</td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  {/if}
-
+  <p class="status">Connection: {connectionState}</p>
+  
   {#if error}
-    <p style="color: red;">{error}</p>
+    <p class="error">{error}</p>
+  {/if}
+  
+  <div class="actions">
+    <button on:click={publishMockUpdate} disabled={!connected || !data}>
+      Simulate Update
+    </button>
+  </div>
+
+  {#if !data}
+    <p class="no-data">No sensor data received yet.</p>
+  {:else}
+    <div class="dashboard">
+      <div class="sensor-card">
+        <div class="sensor-icon">🌡️</div>
+        <h3>Temperature</h3>
+        <div class="sensor-value {getStatusClass(data.temperature, 15, 30)}">
+          {data.temperature.toFixed(1)} °C
+        </div>
+        <div class="sensor-details">
+          Updated: {data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}
+        </div>
+      </div>
+      
+      <div class="sensor-card">
+        <div class="sensor-icon">💧</div>
+        <h3>Humidity</h3>
+        <div class="sensor-value {getStatusClass(data.humidity, 30, 70)}">
+          {data.humidity.toFixed(1)} %
+        </div>
+        <div class="sensor-details">
+          Updated: {data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}
+        </div>
+      </div>
+      
+      <div class="sensor-card">
+        <div class="sensor-icon">🔄</div>
+        <h3>Pressure</h3>
+        <div class="sensor-value {getStatusClass(data.pressure, 980, 1020)}">
+          {data.pressure.toFixed(1)} hPa
+        </div>
+        <div class="sensor-details">
+          Updated: {data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}
+        </div>
+      </div>
+      
+      <div class="sensor-card">
+        <div class="sensor-icon">💨</div>
+        <h3>Gas</h3>
+        <div class="sensor-value {getStatusClass(data.gas, 5, 15)}">
+          {data.gas.toFixed(2)} kΩ
+        </div>
+        <div class="sensor-details">
+          Updated: {data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}
+        </div>
+      </div>
+      
+      <div class="sensor-card">
+        <div class="sensor-icon">🏔️</div>
+        <h3>Altitude</h3>
+        <div class="sensor-value">
+          {data.altitude.toFixed(1)} m
+        </div>
+        <div class="sensor-details">
+          Updated: {data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}
+        </div>
+      </div>
+    </div>
+    
+    <h2>Historical Data</h2>
+    {#if history.length === 0}
+      <p>No historical data available yet.</p>
+    {:else}
+      <div class="history-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Temperature (°C)</th>
+              <th>Humidity (%)</th>
+              <th>Pressure (hPa)</th>
+              <th>Gas (kΩ)</th>
+              <th>Altitude (m)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each history.slice(0, 10) as entry, i}
+              <tr class={i === 0 ? 'newest-entry' : ''}>
+                <td>{new Date(entry.timestamp).toLocaleTimeString()}</td>
+                <td class={getStatusClass(entry.temperature, 15, 30)}>
+                  {entry.temperature.toFixed(1)}
+                </td>
+                <td class={getStatusClass(entry.humidity, 30, 70)}>
+                  {entry.humidity.toFixed(1)}
+                </td>
+                <td class={getStatusClass(entry.pressure, 980, 1020)}>
+                  {entry.pressure.toFixed(1)}
+                </td>
+                <td class={getStatusClass(entry.gas, 5, 15)}>
+                  {entry.gas.toFixed(2)}
+                </td>
+                <td>{entry.altitude.toFixed(1)}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    {/if}
   {/if}
 </main>
+
+<style>
+  .dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+  }
+  
+  .sensor-card {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+  }
+  
+  .sensor-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+  
+  .sensor-value {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  .sensor-value.high {
+    color: var(--error-color);
+  }
+  
+  .sensor-value.low {
+    color: var(--warning-color);
+  }
+  
+  .sensor-value.normal {
+    color: var(--success-color);
+  }
+  
+  .sensor-details {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  
+  .history-container {
+    margin-top: 20px;
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 8px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  th {
+    background-color: var(--bg-tertiary);
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  tr.newest-entry {
+    background-color: var(--bg-tertiary);
+    font-weight: bold;
+  }
+  
+  .actions {
+    margin: 20px 0;
+  }
+  
+  button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: var(--accent-hover);
+  }
+  
+  button:disabled {
+    background-color: var(--text-muted);
+    cursor: not-allowed;
+  }
+  
+  .error {
+    color: var(--error-color);
+    font-weight: bold;
+  }
+  
+  .no-data {
+    padding: 40px;
+    text-align: center;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+</style>
