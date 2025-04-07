@@ -1,22 +1,21 @@
 <div align="center">
-  <h1>Presence Detection System</h1>
+  <h1>Environmental Monitoring System</h1>
   <p>
-    <img src="https://img.shields.io/badge/ESP32-C6-blue?style=flat-square" alt="ESP32-C6">
+    <img src="https://img.shields.io/badge/ESP32-S3-blue?style=flat-square" alt="ESP32-S3">
     <img src="https://img.shields.io/badge/Tauri-1.x-purple?style=flat-square" alt="Tauri">
     <img src="https://img.shields.io/badge/Svelte-3.x-orange?style=flat-square" alt="Svelte">
     <img src="https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square" alt="TypeScript">
-    <img src="https://img.shields.io/badge/mmWave-2.4GHz-green?style=flat-square" alt="mmWave">
+    <img src="https://img.shields.io/badge/BME680-Sensor-green?style=flat-square" alt="BME680">
     <img src="https://img.shields.io/badge/MQTT-Protocol-brightgreen?style=flat-square" alt="MQTT">
   </p>
-  <p>A Simple IoT Project for presence detection using mmWave radar technology, MQTT, and a cross-platform desktop application.</p>
+  <p>A Simple IoT Project for environmental monitoring using BME680 sensor technology, MQTT, and a cross-platform desktop application.</p>
 </div>
 
 ## 📋 Overview
 
 This project consists of two main components:
-1. **IoT Device**: ESP32-C6 based hardware with DFRobot SEN0395 mmWave radar sensor
+1. **IoT Device**: Lilygo T-Display S3 AMOLED with Adafruit BME680 environmental sensor
 2. **Desktop Application**: Cross-platform application built with Tauri, Svelte, TypeScript, and Tailwind CSS
-
 
 ## 🔧 Technology Choices
 
@@ -42,7 +41,7 @@ The project uses MQTT for device-to-application communication, offering several 
 
 - **Lightweight Protocol**: Designed for constrained devices and low-bandwidth, high-latency networks—perfect for IoT applications.
 - **Publish/Subscribe Pattern**: Enables flexible data distribution with minimal network overhead.
-- **Quality of Service Options**: Configurable message delivery guarantees ensure critical presence data is never lost.
+- **Quality of Service Options**: Configurable message delivery guarantees ensure critical environmental data is never lost.
 - **Widespread Support**: Robust client libraries and broker implementations across platforms.
 
 The desktop application leverages the operating system's native networking capabilities for WiFi connectivity, simplifying setup and improving reliability across platforms.
@@ -55,8 +54,6 @@ The desktop application leverages the operating system's native networking capab
 
 Together, this technology stack delivers a responsive, efficient, and secure application capable of handling complex real-time sensor data while providing an intuitive and pleasant user experience.
 
-
-
 ## 📡 IoT Device
 
 ### Hardware Components
@@ -64,11 +61,11 @@ Together, this technology stack delivers a responsive, efficient, and secure app
 <table>
   <tr>
     <td><b>Microcontroller</b></td>
-    <td>ESP32-C6 (featuring Wi-Fi 6, Bluetooth 5.0 LE, Zigbee 3.0, and Thread 1.3)</td>
+    <td>Lilygo T-Display S3 AMOLED (with ESP32-S3 chip, built-in display)</td>
   </tr>
   <tr>
     <td><b>Sensor</b></td>
-    <td>DFRobot SEN0395 24GHz mmWave radar sensor</td>
+    <td>Adafruit BME680 (temperature, humidity, pressure, gas, altitude)</td>
   </tr>
   <tr>
     <td><b>Power</b></td>
@@ -76,138 +73,130 @@ Together, this technology stack delivers a responsive, efficient, and secure app
   </tr>
   <tr>
     <td><b>Connectivity</b></td>
-    <td>Multiple protocols (Wi-Fi, BLE, Zigbee, Thread)</td>
+    <td>Wi-Fi</td>
   </tr>
   <tr>
-    <td><b>Optional</b></td>
-    <td>RGB LED for status indication, additional GPIO connections for external triggers</td>
+    <td><b>Display</b></td>
+    <td>Built-in AMOLED display for on-device data visualization</td>
   </tr>
 </table>
 
 ### Features
 
-- ✅ Non-intrusive presence detection using mmWave radar technology (detects both stationary and moving humans)
-- ✅ Multi-target tracking with precise distance, angle, and movement information
-- ✅ Accurate detection even for sleeping persons or minimal movement
-- ✅ Up to 9m detection range with 100°×40° beam angle
-- ✅ Configurable detection zones and parameters via serial interface
-- ✅ Confidence level reporting for detection reliability assessment
-- ✅ Movement direction determination (approaching, receding, lateral movement)
-- ✅ Low power consumption (90mA typical operating current)
-- ✅ Strong anti-interference ability against environmental factors (temperature, humidity, dust, light, etc.)
-- ✅ LED status indicators for easy troubleshooting
+- ✅ Comprehensive environmental monitoring with BME680 sensor
+- ✅ Temperature measurement with high accuracy
+- ✅ Humidity sensing for ambient moisture levels
+- ✅ Barometric pressure monitoring
+- ✅ Air quality assessment through gas resistance measurement
+- ✅ Altitude calculation based on pressure readings
+- ✅ Built-in AMOLED display for real-time data visualization
+- ✅ Custom UI created with Squareline Studio
+- ✅ MQTT connectivity for data transmission to desktop application
+- ✅ Low power consumption design
+- ✅ Status indicators for easy troubleshooting
 
 ### Setup Instructions
 
 1. **Hardware Assembly**
-   - Connect the SEN0395 mmWave radar sensor to the ESP32-C6 board:
-     - VCC → 3.3V or 5V (3.3V recommended)
-     - GND → GND
-     - UART Tx → GPIO17 (RX pin on ESP32-C6)
-     - UART Rx → GPIO16 (TX pin on ESP32-C6)
-     - GPIO2 → GPIO6 (for direct presence detection output)
-   - Position the sensor following recommended mounting guidelines (top, underneath, or horizontal installation)
+   - Connect the BME680 sensor to the Lilygo T-Display S3 board using SPI:
+     - VIN → 3.3V (use the same voltage that the microcontroller logic is based on)
+     - GND → GND (common power/data ground)
+     - SCK → GPIO 15
+     - SDO → GPIO 14
+     - SDI → GPIO 13
+     - CS → GPIO 12
+   - Position the sensor in an appropriate location for accurate readings
    - Power the device using a USB-C cable
 
 2. **Firmware Installation**
    - Clone this repository
-   - Open the Arduino IDE
-   - Install ESP32-C6 board support:
-     - Go to File → Preferences
-     - Add this URL to the "Additional Boards Manager URLs": https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-     - Go to Tools → Board → Boards Manager
-     - Search for "esp32" and install the latest version
-   - Select the appropriate board: Tools → Board → ESP32 Arduino → ESP32-C6 Dev Module
-   - Open the firmware sketch from the `/firmware/presence_detection` directory
-   - Install required libraries via Library Manager (Tools → Manage Libraries)
-   - Connect your ESP32-C6 board via USB
-   - Select the correct port under Tools → Port
-   - Click Upload button to flash the firmware
+   - Open the project in PlatformIO
+   - Configure WiFi and MQTT settings in the config file
+   - Build and upload the firmware to the Lilygo T-Display S3
+   - The device will boot up and display the UI created with Squareline Studio
 
 3. **Sensor Configuration**
-   - The default configuration supports basic presence detection
+   - The default configuration supports basic environmental monitoring
    - For advanced configuration:
-     - Use serial commands to adjust detection range (0-9m)
-     - Configure output delay parameters
-     - Set up multiple detection zones if needed
-   - Use the desktop application to manage device settings or send direct UART commands at 115200 baud
+     - Modify sampling rates for different environmental parameters
+     - Adjust filtering parameters for noise reduction
+     - Configure display settings and UI elements
+   - Use the desktop application to manage device settings
 
 ### Technical Specifications
 
 <details>
-<summary><b>ESP32-C6 Microcontroller</b></summary>
+<summary><b>Lilygo T-Display S3 AMOLED</b></summary>
 
-- **Wi-Fi**: 2.4 GHz Wi-Fi 6 (802.11ax)
-- **Bluetooth**: Bluetooth 5.0 LE
-- **Other Protocols**: Zigbee 3.0, Thread 1.3 (IEEE 802.15.4)
-- **Flash Memory**: 8MB SPI flash
-- **Operating Voltage**: 3.3V (with onboard 5V to 3.3V LDO)
-- **USB Interface**: USB 2.0 full-speed (12 Mbps)
+- **Processor**: ESP32-S3 dual-core processor
+- **Display**: Built-in AMOLED display
+- **Wi-Fi**: 2.4 GHz Wi-Fi
+- **Flash Memory**: Onboard flash
+- **Operating Voltage**: 3.3V
+- **USB Interface**: USB-C for power and programming
 </details>
 
 <details>
-<summary><b>mmWave Radar Sensor (SEN0395)</b></summary>
+<summary><b>BME680 Environmental Sensor</b></summary>
 
-- **Technology**: FMCW (Frequency Modulated Continuous Wave) radar
-- **Frequency**: 24GHz millimeter-wave
-- **Detection Range**: Up to 9 meters
-- **Detection Angle**: 100° horizontal, 40° vertical
-- **Power Consumption**: 90mA operating, can be optimized with configurable parameters
-- **Operating Voltage**: 3.6-5V
-- **Communication**: Serial UART (115200 baud) and GPIO outputs
-- **Firmware Updates**: Serial port configuration and updates supported
-- **Operating Temperature**: -40~85℃
+- **Temperature Range**: -40 to +85°C
+- **Temperature Accuracy**: ±1.0°C
+- **Humidity Range**: 0-100% RH
+- **Humidity Accuracy**: ±3% RH
+- **Pressure Range**: 300-1100 hPa
+- **Pressure Accuracy**: ±0.6 hPa
+- **Gas Sensor**: VOC gas sensor with resistance range of 0-10000 ohms
+- **Interface**: SPI (as configured in this project)
+- **Operating Voltage**: 3.3V to 5V
+- **Current Consumption**: 3.7 μA (sleep mode) to 12 mA (operation)
 </details>
-
 
 ## 💻 Desktop Application
 
 ### Features
 
-- Real-time presence detection visualization with radar display
-- Multi-target tracking with distance, angle, and movement direction
-- Confidence level monitoring and display
+- Real-time environmental data visualization
+- Historical data tracking and analysis
+- Multiple sensor parameter display
 
 ### Visualization Interface
 
-<p align="center">
-  <img src="./docs/radar_visualization.png" alt="Radar Visualization Interface" width="700">
-</p>
+The application features comprehensive environmental data visualization that displays:
 
-The application features an advanced radar-style visualization that displays:
-
-- **Multiple Target Tracking**: Detect and track up to several individuals simultaneously
-- **Spatial Mapping**: View targets on a polar coordinate system with distance rings
-- **Movement Analysis**: See direction of movement (approaching, receding, left, right)
-- **Detailed Metrics**:
-  - Precise distance measurements (accuracy to 0.01m)
-  - Confidence levels (0-255 scale)
-  - Movement status (moving or stationary)
-  - Target IDs for consistent tracking
-- **Real-time Updates**: Continuous data refresh from the mmWave sensor
+- **Temperature Monitoring**: Real-time temperature readings with historical trends
+- **Humidity Tracking**: Current humidity levels with visual indicators
+- **Pressure Analysis**: Barometric pressure readings and changes over time
+- **Air Quality Assessment**: Gas resistance measurements for air quality monitoring
+- **Altitude Display**: Calculated altitude based on pressure readings
+- **Historical Data**: Timeline view of all environmental parameters
+- **Data Export**: Options to export collected data for further analysis
+- **Light/Dark Mode**: UI theme switching for comfortable viewing
 
 ### Installation
 
 #### TODO
 
-
-
 ### Key Application Features
 
 #### 1. Dashboard
 - At-a-glance system status
-- Real-time occupancy information
+- Real-time environmental information
+- Visual indicators for parameter status (normal, warning, alert)
 
-#### 2. Radar View
-- Interactive radar visualization as shown above
-- Adjustable view parameters (range, scale, refresh rate)
-- Historical trail visualization for movement patterns
-- Filtering options (by distance, confidence, movement)
+#### 2. Data History
+- Historical data visualization
+- Time-based filtering options
+- Data comparison across different time periods
+
+#### 3. MQTT Management
+- Connection configuration
+- Topic management
+- Connection status monitoring
 
 #### 4. Device Management
-- MQTT management
 - Sensor parameter adjustment
-
+- Display configuration
+- Update management
 
 ### System Requirements
 
@@ -227,10 +216,7 @@ The application features an advanced radar-style visualization that displays:
   <tr>
     <td><b>Connectivity</b></td>
     <td>
-      One of the following:<br>
-      - Wi-Fi (2.4 GHz)<br>
-      - <s>Bluetooth 5.0 compatible</s><br>
-      - <s>Thread or Zigbee network (if using those protocols)</s>
+      Wi-Fi (2.4 GHz)
     </td>
   </tr>
 </table>
@@ -240,21 +226,19 @@ The application features an advanced radar-style visualization that displays:
 ### Repository Structure
 
 ```
-presence-detection/
-├── firmware/                 # ESP32-C6 firmware code
-│   ├── presence_detection/   # Main sketch
-│   ├── libraries/            # Custom libraries
-│   │   ├── mmWaveRadar/      # mmWave radar driver library
-│   │   └── PresenceUtils/    # Utility functions
-│   └── examples/             # Example sketches
+environmental-monitor/
+├── firmware/                 # ESP32-S3 firmware code
+│   ├── src/                  # Main PlatformIO source code
+│   ├── include/              # Header files
+│   ├── lib/                  # Custom libraries
+│   │   ├── BME680_Driver/    # BME680 sensor driver library
+│   │   └── EnvironmentUtils/ # Utility functions
+│   └── ui/                   # Squareline Studio UI files
 ├── app/                      # Desktop application
 │   ├── src/                  # Svelte components and TypeScript code
 │   ├── src-tauri/            # Tauri (Rust) backend code
 │   ├── public/               # Static assets
 │   └── build/                # Build output
-├── hardware/                 # Hardware design files
-│   ├── schematics/           # Circuit schematics
-│   └── enclosure/            # 3D printable enclosure files
 └── docs/                     # Documentation
 ```
 
@@ -263,12 +247,14 @@ presence-detection/
 <details>
 <summary><b>Firmware</b></summary>
 
-- Arduino IDE 2.0 or later
-- ESP32 Arduino Core (using Boards Manager)
+- PlatformIO IDE (VSCode extension or CLI)
 - Required libraries:
-  - Arduino library for mmWave Radar SEN0395 
-  - Arduino WiFi libraries (for WiFi connectivity)
+  - Adafruit BME680 Library (configured for SPI)
+  - Adafruit Unified Sensor
+  - Arduino WiFi libraries
   - Arduino MQTT libraries
+  - TFT_eSPI for display control
+  - Squareline Studio generated UI code
 </details>
 
 <details>
@@ -286,35 +272,28 @@ presence-detection/
 
 The system supports multiple communication methods:
 
-1. **Serial Communication with mmWave Sensor**
-   - UART at 115200 baud rate, 8 data bits, no parity, 1 stop bit
-   - ASCII command strings format for configuration
-   - Structured data output for presence detection results
-   - Extended protocol for detailed target information (distance, angle, confidence, movement)
-   - Details in the [mmWave sensor protocol documentation](./docs/protocol/mmwave_protocol.md)
+1. **SPI Communication with BME680 Sensor**
+   - SPI protocol for reading sensor data (pins 15, 14, 13, 12)
+   - Configurable sampling rates and filtering parameters
+   - Structured data output for environmental readings
 
-2. **ESP32-C6 to Desktop Communication**
-   - **Wi-Fi**: Leverage applications operating systems native WiFi solution for connectivity
-   - **MQTT**: Protocol used to transmit data over WiFi connectivity.
+2. **ESP32-S3 to Desktop Communication**
+   - **Wi-Fi**: Leverages application's operating system native WiFi solution for connectivity
+   - **MQTT**: Protocol used to transmit data over WiFi connectivity
    - **USB**: Serial communication for debugging and direct control
-   - Real-time data streaming protocol for multi-target information
-   - Full protocol specifications in the [communication documentation](./docs/protocol/README.md)
+   - Real-time data streaming for environmental information
 
 3. **Data Format**
    ```json
    {
-     "targets": [
-       {
-         "id": 0,
-         "distance": 2.75,
-         "angle": -15.2,
-         "confidence": 204,
-         "movement": "approaching",
-         "velocity": 0.3,
-         "isActive": true
-       },
-       ...
-     ]
+     "readings": {
+       "temperature": 25.4,
+       "humidity": 37.7,
+       "pressure": 992.9,
+       "gas": 11.71,
+       "altitude": 171.1,
+       "timestamp": "2025-04-06T10:43:57"
+     }
    }
    ```
 
@@ -324,37 +303,37 @@ The system supports multiple communication methods:
 <div>
 
 ### Smart Home
-- Room presence detection for lighting and HVAC control
-- Security monitoring with multi-person tracking
-- Sleep monitoring without privacy concerns of cameras
-- Energy optimization based on occupancy patterns
+- Indoor air quality monitoring
+- Climate control optimization
+- Energy efficiency improvements
+- Weather trend analysis
 </div>
 
 <div>
 
 ### Office Environments
-- Meeting room utilization analytics
-- Desk occupancy monitoring
-- Traffic flow analysis for space optimization
-- Triggering of presentation systems based on presence
+- Workplace comfort monitoring
+- HVAC system optimization
+- Meeting room environmental quality tracking
+- Sick building syndrome prevention
 </div>
 
 <div>
 
-### Retail and Public Spaces
-- Customer flow analysis
-- Queue management
-- Occupancy counting with directional information
-- Triggering of interactive displays when approached
+### Agricultural Applications
+- Greenhouse climate monitoring
+- Optimal growing condition maintenance
+- Early detection of environmental anomalies
+- Crop yield optimization
 </div>
 
 <div>
 
 ### Industrial Applications
-- Safety zone monitoring
-- Process automation based on worker presence
-- Equipment activation/deactivation based on proximity
-- Unauthorized access detection
+- Storage environment monitoring
+- Process control environmental factors
+- Equipment operation condition monitoring
+- Regulatory compliance for environmental conditions
 </div>
 </div>
 
@@ -368,14 +347,18 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ## 🙏 Acknowledgments
 
-- [DFRobot](https://www.dfrobot.com/) for the SEN0395 mmWave radar sensor
-- [Espressif](https://www.espressif.com/) for the ESP32-C6 microcontroller and ESP-IDF framework
+- [Adafruit](https://www.adafruit.com/) for the BME680 sensor and libraries
+- [Lilygo](https://www.lilygo.cc/) for the T-Display S3 AMOLED development board
+- [Espressif](https://www.espressif.com/) for the ESP32-S3 microcontroller
 - [Tauri](https://tauri.app/) for the desktop application framework
 - [Svelte](https://svelte.dev/) for the frontend framework
 - [Tailwind CSS](https://tailwindcss.com/) for UI styling
+- [Squareline Studio](https://squareline.io/) for UI design tools
 
 ## 📚 References
 
-- [ESP32-C6 Technical Documentation](https://www.espressif.com/en/products/socs/esp32-c6)
-- [DFRobot SEN0395 mmWave Radar Sensor Documentation](https://wiki.dfrobot.com/mmWave_Radar_Human_Presence_Detection_SKU_SEN0395)
-- [ESP-IDF Programming Guide](https://docs.espressif.com/projects/esp-idf/en/latest/esp32c6/index.html)
+- [ESP32-S3 Technical Documentation](https://www.espressif.com/en/products/socs/esp32-s3)
+- [Adafruit BME680 Documentation](https://learn.adafruit.com/adafruit-bme680-humidity-temperature-barometic-pressure-voc-gas)
+- [Lilygo T-Display S3 Documentation](https://github.com/Xinyuan-LilyGO/T-Display-S3)
+- [PlatformIO Documentation](https://docs.platformio.org/)
+- [Squareline Studio Documentation](https://docs.squareline.io/)
